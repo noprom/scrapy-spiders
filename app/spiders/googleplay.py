@@ -10,23 +10,24 @@ from app.items import GoogleItem
 class GoogleplaySpider(CrawlSpider):
     name = "googleplay"
     allowed_domains = ["play.google.com"]
+    lang = 'en'
     start_urls = [
-        'https://play.google.com/store/apps/',
-        'https://play.google.com/store/apps/category/TRAVEL_AND_LOCAL'
-        'https://play.google.com/store/apps/category/APP_WALLPAPER'
-        'https://play.google.com/store/apps/category/PERSONALIZATION'
-        'https://play.google.com/store/apps/category/TOOLS'
-        'https://play.google.com/store/apps/category/BUSINESS'
-        'https://play.google.com/store/apps/category/SHOPPING'
-        'https://play.google.com/store/apps/category/HEALTH_AND_FITNESS'
-        'https://play.google.com/store/apps/category/TRANSPORTATION'
-        'https://play.google.com/store/apps/category/EDUCATION'
-        'https://play.google.com/store/apps/category/COMICS'
-        'https://play.google.com/store/apps/category/MEDIA_AND_VIDEO'
-        'https://play.google.com/store/apps/category/LIBRARIES_AND_DEMO'
+        'https://play.google.com/store/apps?hl=' + lang,
+        'https://play.google.com/store/apps/category/TRAVEL_AND_LOCAL?hl=' + lang,
+        'https://play.google.com/store/apps/category/APP_WALLPAPER?hl=' + lang,
+        'https://play.google.com/store/apps/category/PERSONALIZATION?hl=' + lang,
+        'https://play.google.com/store/apps/category/TOOLS?hl=' + lang,
+        'https://play.google.com/store/apps/category/BUSINESS?hl=' + lang,
+        'https://play.google.com/store/apps/category/SHOPPING?hl=' + lang,
+        'https://play.google.com/store/apps/category/HEALTH_AND_FITNESS?hl=' + lang,
+        'https://play.google.com/store/apps/category/TRANSPORTATION?hl=' + lang,
+        'https://play.google.com/store/apps/category/EDUCATION?hl=' + lang,
+        'https://play.google.com/store/apps/category/COMICS?hl=' + lang,
+        'https://play.google.com/store/apps/category/MEDIA_AND_VIDEO?hl=' + lang,
+        'https://play.google.com/store/apps/category/LIBRARIES_AND_DEMO?hl=' + lang
     ]
     rules = [
-        Rule(LinkExtractor(allow=("https://play\.google\.com/store/apps/details\?id=[\w\.]+$", )), callback='parse_app', follow=True),
+        Rule(LinkExtractor(allow=("https://play\.google\.com/store/apps/details\?hl=en&id=[\w\.]+$", )), callback='parse_app', follow=True),
     ] # CrawlSpider 会根据 rules 规则爬取页面并调用函数进行处理
 
     def parse_app(self, response):
