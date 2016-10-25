@@ -20,11 +20,12 @@ class GoogleplayPipeline(object):
 
     def process_item(self, item, spider):
         line = json.dumps(dict(item))
-        if spider.name == 'googleplay':
+        if spider.name == 'googleplay' or spider.name == 'gp':
             line = line.replace("\r", "").replace("\n", "").replace("\t", "").replace("'", "") + "\n"
         else:
             line = line.replace("\\n", "") + "\n"
 
+        # save to file
         if not self.file:
             self.file = codecs.open(spider.name + '-apps.json', 'w', encoding='utf-8')
 

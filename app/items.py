@@ -15,6 +15,9 @@ class AppItem(scrapy.Item):
 
 class GoogleItem(scrapy.Item):
     title = scrapy.Field()
+    producer = scrapy.Field()
+    rating = scrapy.Field()
+    price = scrapy.Field()
     url = scrapy.Field()
     num = scrapy.Field()
     cate = scrapy.Field()
@@ -25,3 +28,4 @@ class GoogleItem(scrapy.Item):
     score = scrapy.Field()
     pkg = scrapy.Field()
     tag = scrapy.Field()
+    icon = scrapy.Field()

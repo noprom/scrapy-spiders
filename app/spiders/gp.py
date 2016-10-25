@@ -1,29 +1,73 @@
 # coding=utf-8
 '''
-@Title: Crawl for gp apps
+@Title: Crawl for google apps
 
 @Author: tyee.noprom@qq.com
 @Time: 25/10/2016 2:24 PM
 '''
 
 import scrapy
+from app.items import GoogleItem
 
 
 class GPSpider(scrapy.Spider):
-    name = "gp"
+    '''
+    Google app
+    '''
+    name = 'gp'
+    datapath = '/Users/noprom/Documents/Dev/Python/Pro/scrapy-spiders/data/'
 
     def start_requests(self):
-        urls = [
-            'http://app.mi.com/category/5',
-            'http://app.mi.com/category/15',
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        '''
+        爬虫入口
+        :return:
+        '''
+        file = open(self.datapath + 'pkgname.txt')
+        detail_url = 'https://play.google.com/store/apps/details?hl=en_US&id='
+        while True:
+            lines = file.readlines(100000)
+            if not lines:
+                break
+            for pkg in lines:
+                pkg = pkg.replace("\r", "").replace("\n", "").replace("\t", "").replace("'", "")
+                print 'pkg: %s' % pkg
+                url = detail_url + pkg
+                yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        print '----------> %s' % page
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        '''
+        提取字段
+        :param response:
+        :return:
+        '''
+        item = GoogleItem()
+        item['url'] = response.url
+        item['title'] = response.xpath("//div[@class='id-app-title']").xpath("text()").extract()
+        item['title'] = ''.join(item['title']).replace('\n', '').replace('\r', '').replace('\t', '')
+        item['producer'] = response.xpath("//a[@class='document-subtitle primary']/span/text()").extract()
+        item['producer'] = ''.join(item['producer']).replace('\n', '').replace('\r', '').replace('\t', '')
+        item['price'] = response.xpath("//meta[@itemprop='price']/@content").extract()[0]
+        item['rating'] = response.xpath("//span[@class='rating-count']/text()").extract()
+        item['num'] = response.xpath("//div[@itemprop='numDownloads']").xpath("text()").extract()[0]
+        item['cate'] = response.xpath("//span[@itemprop='genre']").xpath("text()").extract()
+        item['cate'] = ''.join(item['cate']).replace(' ', '').replace('\n', '').replace('\r', '').replace('\t', '')
+        item['rate'] = response.xpath("//div[@itemprop='contentRating']").xpath("text()").extract()
+        item['rate'] = ''.join(item['rate']).replace('\n', '').replace('\r', '').replace('\t', '')
+        item['desc'] = response.xpath("//div[@class='description']").xpath("text()").extract()
+        item['desc'] = ''.join(item['desc']).replace(' ', '').replace('\n', '').replace('\r', '').replace('\t', '')
+        item['score'] = response.xpath("//div[@class='score']").xpath("text()").extract()[0]
+        item['meta'] = response.xpath("//meta[@name='description']").xpath("@content").extract()
+        item['meta'] = ''.join(item['meta']).replace(' ', '').replace('\n', '').replace('\r', '').replace('\t', '')
+        item['pkg'] = response.xpath("/html").re(u'data-docid="(.*?)"')[0]
+        item['icon'] = response.xpath("//div[@class='cover-container']/img/@src").extract()[0].replace("//", "")
+
+        item['info'] = dict()
+        title = response.css('.details-section.metadata').css(".title::text").extract()
+        content = response.css('.details-section.metadata').css(".content::text").extract()
+
+        for i, t in enumerate(title):
+            key = ''.join(t.strip()).replace('\t', '').replace('\r', '').replace('\n', '').replace(' ', '')
+            value = ''.join(content[i].strip()).replace('\t', '').replace('\r', '').replace('\n', '')
+            item['info'][key] = value
+
+        yield item
