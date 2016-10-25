@@ -14,6 +14,7 @@ class AppItem(scrapy.Item):
     pass
 
 class GoogleItem(scrapy.Item):
+    lang = scrapy.Field()
     title = scrapy.Field()
     producer = scrapy.Field()
     rating = scrapy.Field()

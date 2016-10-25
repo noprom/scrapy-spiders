@@ -23,16 +23,21 @@ class GPSpider(scrapy.Spider):
         :return:
         '''
         file = open(self.datapath + 'pkgname.txt')
-        detail_url = 'https://play.google.com/store/apps/details?hl=en_US&id='
-        while True:
-            lines = file.readlines(100000)
-            if not lines:
-                break
-            for pkg in lines:
-                pkg = pkg.replace("\r", "").replace("\n", "").replace("\t", "").replace("'", "")
-                print 'pkg: %s' % pkg
-                url = detail_url + pkg
-                yield scrapy.Request(url=url, callback=self.parse)
+        langs = ['en', 'af', 'ms', 'ca', 'cs', 'da', 'de', 'et', 'en_GB', 'en', 'es', 'es_419', 'fil', 'fr_CA',
+                 'fr', 'hr', 'in', 'zu', 'it', 'sw', 'lv', 'lt', 'hu', 'nl', 'no', 'pl', 'pt_BR', 'pt_PT', 'ro',
+                 'sk', 'sl', 'fi', 'sv', 'vi', 'tr', 'el', 'be', 'bg', 'ru', 'sr', 'uk', 'ar', 'am', 'hi', 'th', 'ko',
+                 'zh_HK', 'ja', 'zh_CN', 'zh_TW']
+        for lang in langs:
+            detail_url = 'https://play.google.com/store/apps/details?hl=%s&id=' % lang
+            while True:
+                lines = file.readlines(100000)
+                if not lines:
+                    break
+                for pkg in lines:
+                    pkg = pkg.replace("\r", "").replace("\n", "").replace("\t", "").replace("'", "")
+                    print 'pkg: %s' % pkg
+                    url = detail_url + pkg
+                    yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         '''
@@ -41,6 +46,9 @@ class GPSpider(scrapy.Spider):
         :return:
         '''
         item = GoogleItem()
+        lang_start = response.url.index('hl=') + 3
+        lang_end = response.url.index('&id=')
+        item['lang'] = response.url[lang_start: lang_end]
         item['url'] = response.url
         item['title'] = response.xpath("//div[@class='id-app-title']").xpath("text()").extract()
         item['title'] = ''.join(item['title']).replace('\n', '').replace('\r', '').replace('\t', '')
@@ -55,8 +63,10 @@ class GPSpider(scrapy.Spider):
         item['rate'] = ''.join(item['rate']).replace('\n', '').replace('\r', '').replace('\t', '')
         item['desc'] = response.xpath("//div[@class='description']").xpath("text()").extract()
         item['desc'] = ''.join(item['desc']).replace(' ', '').replace('\n', '').replace('\r', '').replace('\t', '')
+        item['desc'] = ''
         item['score'] = response.xpath("//div[@class='score']").xpath("text()").extract()[0]
         item['meta'] = response.xpath("//meta[@name='description']").xpath("@content").extract()
+        item['meta'] = ''
         item['meta'] = ''.join(item['meta']).replace(' ', '').replace('\n', '').replace('\r', '').replace('\t', '')
         item['pkg'] = response.xpath("/html").re(u'data-docid="(.*?)"')[0]
         item['icon'] = response.xpath("//div[@class='cover-container']/img/@src").extract()[0].replace("//", "")
