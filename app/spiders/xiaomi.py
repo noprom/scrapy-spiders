@@ -9,7 +9,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from app.items import GoogleItem
 
-class WandoujiaSpider(RedisSpider):
+class XiaomiSpider(RedisSpider):
     name = "xiaomi"
 
     start_urls = [

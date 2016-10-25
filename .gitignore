@@ -2,3 +2,4 @@
 *.pyc
 items.json
 *apps.json
+*.json
