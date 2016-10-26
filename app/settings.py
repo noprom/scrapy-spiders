@@ -22,10 +22,18 @@ USER_AGENT = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.270
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-# 保存到文件配置
+# Pipeline 配置
 ITEM_PIPELINES = {
-    'app.pipelines.GoogleplayPipeline': 100
+    'app.pipelines.GoogleplayPipeline': 300,
+    'app.pipelines.GooglePlayMysqlStoragePipeline': 300,
 }
+
+# start MySQL database configure setting
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'nuts'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = '1q2w3e4r5t'
+# end of MySQL database configure setting
 
 # Enables scheduling storing requests queue in redis.
 #SCHEDULER = "scrapy_redis.scheduler.Scheduler"

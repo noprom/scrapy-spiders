@@ -1,0 +1,6 @@
+FROM daocloud.io/centos:centos7.2.1511
+MAINTAINER "noprom" <tyee.noprom@qq.com>
+# Install Software
+RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+RUN curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+RUN yum makecache; yum -y update; yum clean all
